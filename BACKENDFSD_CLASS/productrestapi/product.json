@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "name": "Laptop",
+    "price": 55000,
+    "category": "Electronics",
+    "brand": "HP",
+    "stock": 10
+  },
+  {
+    "id": 2,
+    "name": "Smartphone",
+    "price": 25000,
+    "category": "Electronics",
+    "brand": "Samsung",
+    "stock": 20
+  },
+  {
+    "id": 3,
+    "name": "Headphones",
+    "price": 2000,
+    "category": "Electronics",
+    "brand": "Boat",
+    "stock": 30
+  },
+  {
+    "id": 4,
+    "name": "Keyboard",
+    "price": 1200,
+    "category": "Electronics",
+    "brand": "Logitech",
+    "stock": 15
+  },
+  {
+    "id": 5,
+    "name": "Mouse",
+    "price": 800,
+    "category": "Electronics",
+    "brand": "Dell",
+    "stock": 25
+  }
+]
