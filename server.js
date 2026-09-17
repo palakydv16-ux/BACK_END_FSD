@@ -1,106 +1,97 @@
-import http from "http";
+const express = require("express");
 
-const server = http.createServer((req, res) => {
+const app = express();
+const PORT = 3000;
 
-    res.setHeader("Content-Type", "text/html");
+app.use(express.json());
 
-    if (req.url === "/") {
+const products = Array.from({ length: 100 }, (_, i) => ({
+    id: i + 1,
+    name: `Product ${i + 1}`,
+    price: (100 + i * 10),
+    category: i % 2 === 0 ? "Electronics" : "Clothing",
+    inStock: i % 3 !== 0
+}));
 
-        res.statusCode = 200;
-
-        res.end(`
-            <html>
-                <head>
-                    <title>My College</title>
-                </head>
-                <body>
-                    <h1>Welcome to My College</h1>
-
-                    <nav>
-                        <a href="/">Home</a> |
-                        <a href="/home">Home Page</a> |
-                        <a href="/about">About</a>
-                    </nav>
-
-                    <p>Welcome to our college website.</p>
-                </body>
-            </html>
-        `);
-
-    } else if (req.url === "/home") {
-
-        res.statusCode = 200;
-
-        res.end(`
-            <html>
-                <head>
-                    <title>Home Page</title>
-                </head>
-                <body>
-                    <h1>Home Page</h1>
-
-                    <nav>
-                        <a href="/">Welcome</a> |
-                        <a href="/home">Home</a> |
-                        <a href="/about">About</a>
-                    </nav>
-
-                    <p>This is the Home Page of our college.</p>
-                </body>
-            </html>
-        `);
-
-    } else if (req.url === "/about") {
-
-        res.statusCode = 200;
-
-        res.end(`
-            <html>
-                <head>
-                    <title>About Department</title>
-                </head>
-                <body>
-                    <h1>About Computer Science Department</h1>
-
-                    <nav>
-                        <a href="/">Welcome</a> |
-                        <a href="/home">Home</a> |
-                        <a href="/about">About</a>
-                    </nav>
-
-                    <p>
-                        This is the Computer Science Department
-                        of our college.
-                    </p>
-                </body>
-            </html>
-        `);
-
-    } else {
-
-        res.statusCode = 404;
-
-        res.end(`
-            <html>
-                <head>
-                    <title>404 - Not Found</title>
-                </head>
-                <body>
-                    <h1>404 - Page Not Found</h1>
-
-                    <nav>
-                        <a href="/">Welcome</a> |
-                        <a href="/home">Home</a> |
-                        <a href="/about">About</a>
-                    </nav>
-
-                    <p>The requested URL does not exist.</p>
-                </body>
-            </html>
-        `);
-    }
+// Home route
+app.get("/", (req, res) => {
+    res.send("Product REST API is running");
 });
 
-server.listen(3000, () => {
-    console.log("Server running at http://localhost:3000");
+// Get all products
+app.get("/products", (req, res) => {
+    res.json(products);
+});
+
+// Get product by ID
+app.get("/products/:id", (req, res) => {
+    const id = parseInt(req.params.id);
+    const product = products.find(p => p.id === id);
+
+    if (!product) {
+        return res.status(404).json({
+            message: "Product not found"
+        });
+    }
+
+    res.json(product);
+});
+
+// Add a new product
+app.post("/products", (req, res) => {
+    const { name, price, category, inStock } = req.body;
+
+    const newProduct = {
+        id: products.length + 1,
+        name,
+        price,
+        category,
+        inStock
+    };
+
+    products.push(newProduct);
+
+    res.status(201).json(newProduct);
+});
+
+// Update a product
+app.put("/products/:id", (req, res) => {
+    const id = parseInt(req.params.id);
+    const product = products.find(p => p.id === id);
+
+    if (!product) {
+        return res.status(404).json({
+            message: "Product not found"
+        });
+    }
+
+    product.name = req.body.name || product.name;
+    product.price = req.body.price || product.price;
+    product.category = req.body.category || product.category;
+    product.inStock = req.body.inStock ?? product.inStock;
+
+    res.json(product);
+});
+
+// Delete a product
+app.delete("/products/:id", (req, res) => {
+    const id = parseInt(req.params.id);
+    const index = products.findIndex(p => p.id === id);
+
+    if (index === -1) {
+        return res.status(404).json({
+            message: "Product not found"
+        });
+    }
+
+    const deletedProduct = products.splice(index, 1);
+
+    res.json({
+        message: "Product deleted successfully",
+        product: deletedProduct[0]
+    });
+});
+
+app.listen(PORT, () => {
+    console.log(`Server running at http://localhost:${PORT}`);
 });
